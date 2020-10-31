@@ -6,6 +6,7 @@
         #
 .globl kerneltrap
 .globl kernelvec
+.option norvc
 .align 4
 kernelvec:
         // make room to save registers.

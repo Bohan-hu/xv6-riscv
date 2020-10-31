@@ -4,7 +4,7 @@
 # 
 # Save current registers in old. Load from new.	
 
-
+.option norvc
 .globl swtch
 swtch:
         sd ra, 0(a0)

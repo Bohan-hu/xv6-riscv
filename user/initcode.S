@@ -1,6 +1,6 @@
 # Initial process that execs /init.
 # This code runs in user space.
-
+.option norvc
 #include "syscall.h"
 
 # exec(init, argv)

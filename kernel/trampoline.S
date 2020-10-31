@@ -10,6 +10,7 @@
         #
 	.section trampsec
 .globl trampoline
+.option norvc
 trampoline:
 .align 4
 .globl uservec
