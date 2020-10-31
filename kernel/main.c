@@ -12,23 +12,37 @@ main()
 {
   if(cpuid() == 0){
     consoleinit();
+    Log();
     printfinit();
     printf("\n");
     printf("xv6 kernel is booting\n");
     printf("\n");
     kinit();         // physical page allocator
+    Log();
     kvminit();       // create kernel page table
+    Log();
     kvminithart();   // turn on paging
+    Log();
     procinit();      // process table
+    Log();
     trapinit();      // trap vectors
+    Log();
     trapinithart();  // install kernel trap vector
+    Log();
     plicinit();      // set up interrupt controller
+    Log();
     plicinithart();  // ask PLIC for device interrupts
+    Log();
     binit();         // buffer cache
+    Log();
     iinit();         // inode cache
+    Log();
     fileinit();      // file table
-    virtio_disk_init(); // emulated hard disk
+    Log();
+    // virtio_disk_init(); // emulated hard disk
+    Log();
     userinit();      // first user process
+    Log();
     __sync_synchronize();
     started = 1;
   } else {
@@ -40,6 +54,6 @@ main()
     trapinithart();   // install kernel trap vector
     plicinithart();   // ask PLIC for device interrupts
   }
-
+  Log();
   scheduler();        
 }

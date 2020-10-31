@@ -25,23 +25,23 @@ kvmmake(void)
   memset(kpgtbl, 0, PGSIZE);
 
   // uart registers
-  kvmmap(kpgtbl, UART0, UART0, PGSIZE, PTE_R | PTE_W);
+  kvmmap(kpgtbl, UART0, UART0, PGSIZE, PTE_R | PTE_W | PTE_A);
 
   // virtio mmio disk interface
-  kvmmap(kpgtbl, VIRTIO0, VIRTIO0, PGSIZE, PTE_R | PTE_W);
+  kvmmap(kpgtbl, VIRTIO0, VIRTIO0, PGSIZE, PTE_R | PTE_W | PTE_A);
 
   // PLIC
-  kvmmap(kpgtbl, PLIC, PLIC, 0x400000, PTE_R | PTE_W);
+  kvmmap(kpgtbl, PLIC, PLIC, 0x400000, PTE_R | PTE_W | PTE_A);
 
   // map kernel text executable and read-only.
-  kvmmap(kpgtbl, KERNBASE, KERNBASE, (uint64)etext-KERNBASE, PTE_R | PTE_X);
+  kvmmap(kpgtbl, KERNBASE, KERNBASE, (uint64)etext-KERNBASE, PTE_R | PTE_X | PTE_A);
 
   // map kernel data and the physical RAM we'll make use of.
-  kvmmap(kpgtbl, (uint64)etext, (uint64)etext, PHYSTOP-(uint64)etext, PTE_R | PTE_W);
+  kvmmap(kpgtbl, (uint64)etext, (uint64)etext, PHYSTOP-(uint64)etext, PTE_R | PTE_W | PTE_A);
 
   // map the trampoline for trap entry/exit to
   // the highest virtual address in the kernel.
-  kvmmap(kpgtbl, TRAMPOLINE, (uint64)trampoline, PGSIZE, PTE_R | PTE_X);
+  kvmmap(kpgtbl, TRAMPOLINE, (uint64)trampoline, PGSIZE, PTE_R | PTE_X | PTE_A);
 
   // map kernel stacks
   proc_mapstacks(kpgtbl);
@@ -91,7 +91,7 @@ walk(pagetable_t pagetable, uint64 va, int alloc)
       if(!alloc || (pagetable = (pde_t*)kalloc()) == 0)
         return 0;
       memset(pagetable, 0, PGSIZE);
-      *pte = PA2PTE(pagetable) | PTE_V;
+      *pte = PA2PTE(pagetable) | PTE_V | PTE_A;
     }
   }
   return &pagetable[PX(0, va)];
@@ -147,7 +147,7 @@ mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa, int perm)
       return -1;
     if(*pte & PTE_V)
       panic("remap");
-    *pte = PA2PTE(pa) | perm | PTE_V;
+    *pte = PA2PTE(pa) | perm | PTE_V | PTE_A;
     if(a == last)
       break;
     a += PGSIZE;
@@ -208,7 +208,7 @@ uvminit(pagetable_t pagetable, uchar *src, uint sz)
     panic("inituvm: more than a page");
   mem = kalloc();
   memset(mem, 0, PGSIZE);
-  mappages(pagetable, 0, PGSIZE, (uint64)mem, PTE_W|PTE_R|PTE_X|PTE_U);
+  mappages(pagetable, 0, PGSIZE, (uint64)mem, PTE_W|PTE_R|PTE_X|PTE_U|PTE_A);
   memmove(mem, src, sz);
 }
 
